@@ -1,90 +1,69 @@
-import react, { useState } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
+import { fetchDataFromApi } from "./utils/api";
+import { getApiConfiguration, getGenres } from "./store/homeSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-function BMICalculator() {
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [bmi, setBMI] = useState(null);
+import Header from "./components/header/Header";
+import Footer from "./components/footer/Footer";
+import Home from "./pages/home/Home";
+import Details from "./pages/details/Details";
+import SearchResult from "./pages/searchResult/SearchResult";
+import Explore from "./pages/explore/Explore";
+import PageNotFound from "./pages/404/PageNotFound";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-  const calculateBMI = () => {
-    const parsedHeight = parseInt(height);
-    const parsedWeight = parseInt(weight);
+function App() {
+  const dispatch = useDispatch();
+  const { url } = useSelector((state) => state.home);
 
-    if (
-      isNaN(parsedHeight) ||
-      parsedHeight <= 0 ||
-      isNaN(parsedWeight) ||
-      parsedWeight <= 0
-    ) {
-      setBMI("Please enter valid height & weight");
-      return;
-    }
+  useEffect(() => {
+    fetchApiConfig();
+    genresCall();
+  }, []);
 
-    const calculatedBMI = (parsedWeight / (parsedHeight / 100) ** 2).toFixed(2);
-    setBMI(calculatedBMI);
+  const fetchApiConfig = () => {
+    fetchDataFromApi("/configuration").then((res) => {
+      // console.log(res);
+
+      const url = {
+        backdrop: res.images.secure_base_url + "original",
+        poster: res.images.secure_base_url + "original",
+        profile: res.images.secure_base_url + "original",
+      };
+
+      dispatch(getApiConfiguration(url));
+    });
   };
 
-  const getCategory = () => {
-    if (bmi < 18.5) return "Under Weight";
-    if (bmi < 24.9) return "Normal Weight";
-    if (bmi < 29.9) return "Over Weight";
-    if (bmi > 30) return "Obesity";
+  const genresCall = async () => {
+    let promises = [];
+    let endPoints = ["tv", "movie"];
+    let allGenres = {};
+
+    endPoints.forEach((url) => {
+      promises.push(fetchDataFromApi(`/genre/${url}/list`));
+    });
+    const data = await Promise.all(promises);
+    data.map(({ genres }) => {
+      return genres.map((item) => (allGenres[item.id] = item));
+    });
+    // console.log(allGenres)
+    dispatch(getGenres(allGenres));
   };
 
   return (
-    <div className="container">
-      <h1>BMI Calculator</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          calculateBMI();
-        }}
-      >
-        <div className="centre">
-          <div className="mesure">
-            <label className="label">Height:</label>
-            <input
-              className="input-box"
-              type="number"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-            />
-            <label className="label">Cm</label>
-          </div>
-          <div className="mesure">
-            <label className="label label-weight">Weight:</label>
-            <input
-              type="number"
-              className="input-box input-weight"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-            />
-            <label className="label">Kg</label>
-          </div>
-          {/* <div className='calculate-result'> */}
-          <button type="submit">Calculate</button>
-          {bmi !== null && (
-            <div id="results">
-              <span className="bmi">{bmi}</span>
-              <span className="getCategory">{getCategory()}</span>
-            </div>
-          )}
-          {/* </div> */}
-        </div>
-      </form>
-
-      <div id="weight-guide">
-        <h2>BMI Weight Guide</h2>
-        <p>Under Weight = Below 18.5</p>
-
-        <p>Under Weight = 18.6 to 24.9</p>
-
-        <p>Over Weight = 25 to 29.9 </p>
-
-        <p>Obsity = 30 and above</p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/:mediaType/:id" element={<Details />} />
+        <Route path="/search/:query" element={<SearchResult />} />
+        <Route path="/explore/:mediaType" element={<Explore />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
   );
 }
 
-export default BMICalculator;
+export default App;

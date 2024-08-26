@@ -1,0 +1,41 @@
+@import "../../../mixins.scss";
+
+.posterImage {
+  height: 600px;
+}
+
+@media (max-width: 640px) {
+  .poster {
+    height: 200px;
+  }
+
+  .carousel .control-next.control-arrow,
+  .carousel .control-next.control-arrow {
+    display: none;
+  }
+
+  .carousel .control-prev.control-arrow,
+  .carousel .control-prev.control-arrow {
+    display: none;
+  }
+}
+
+.posterImage > img {
+  margin: auto;
+  display: block;
+  width: 100%;
+}
+
+.carousel .control-next.control-arrow,
+.carousel .control-next.control-arrow:hover {
+  background-color: transparent;
+  height: 80px;
+  top: 40%;
+}
+
+.carousel .control-prev.control-arrow,
+.carousel .control-prev.control-arrow:hover {
+  background-color: transparent;
+  height: 80px;
+  top: 40%;
+}
