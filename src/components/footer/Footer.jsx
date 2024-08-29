@@ -31,17 +31,17 @@ const Footer = () => {
         <div className="socialIcons">
           <span
             className="icon"
-            onClick={() => window.open("https://www.facebook.com", "_blank")}
+            onClick={() => window.open("https://www.facebook.com/imdb/", "_blank")}
           >
             <FaFacebookF />
           </span>
-          <span className="icon" onClick={() => window.open("https://www.instagram.com", "_blank")}>
+          <span className="icon" onClick={() => window.open("https://www.instagram.com/imdb/", "_blank")}>
             <FaInstagram />
           </span>
-          <span className="icon" onClick={() => window.open("https://www.twitter.com", "_blank")}>
+          <span className="icon" onClick={() => window.open("https://x.com/IMDb", "_blank")}>
             <FaTwitter />
           </span>
-          <span className="icon" onClick={() => window.open("https://www.linkedin.in", "_blank")}>
+          <span className="icon" onClick={() => window.open("https://www.linkedin.com/in/akash-yadav-url/", "_blank")}>
             <FaLinkedin />
           </span>
         </div>
